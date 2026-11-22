@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.blog_backend.Exceptions.ResourceNotFoundException;
 import com.example.blog_backend.Models.CommentModel;
+import com.example.blog_backend.Models.PostModel;
 import com.example.blog_backend.Models.UserModel;
 import com.example.blog_backend.Repo.CommentRepo;
 import com.example.blog_backend.Repo.PostRepo;
@@ -34,8 +35,19 @@ public class CommentService
             (() -> new ResourceNotFoundException
             ("User Not Found With id :"+ userId));
 
+
         Long postId =comment.getPost().getPostId();  //post id find karna 
         
+        PostModel post=postRepo.findById(postId).    //post check karna database me 
+            orElseThrow(() -> new ResourceNotFoundException
+                ("Post Not Found with Id :"+ postId));
+
+        comment.setUser(user);   //user ko comment ke sath set karna 
+
+        comment.setPost(post);   //post ko comment ke sath set karna
+
+        return commentRepo.save(comment);
+
     }
 
     //get all comment--------
@@ -47,34 +59,32 @@ public class CommentService
     //get by id -------
     public CommentModel getCommentById(Long id)
     {
-        return commentRepo.findById(id).orElse(null);
+        return commentRepo.findById(id).                 //comment nhi mila to exeption throw
+        orElseThrow(() -> new ResourceNotFoundException
+        ("Comment not found with id :"+ id));
     }
     
     //update comment-------
     public CommentModel updateComment(CommentModel updateComment, Long id)
     {
-        CommentModel comment=commentRepo.findById(id).orElse(null);
+        CommentModel comment=commentRepo.findById(id).
+        orElseThrow(() -> new ResourceNotFoundException
+        ("Comment not found with id :"+ id));
 
-        if(comment!=null)
-        {
-            comment.setComment(updateComment.getComment());
+        comment.setComment(updateComment.getComment());
 
-            return commentRepo.save(comment);
-        }
-        return null;
+        return commentRepo.save(comment);
     }
 
     //delete comment---------
     public String deleteComment(Long id)
     {
-        CommentModel comment=commentRepo.findById(id).orElse(null);
+        CommentModel comment=commentRepo.findById(id).
+        orElseThrow(() -> new ResourceNotFoundException
+        ("Comment not found with id :"+ id));
 
-        if(comment!=null)
-        {
             commentRepo.deleteById(id);
             return "Comment deleted Successfully";
-        }   
-        return "Comment not Found";
     }
 
 }
