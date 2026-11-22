@@ -58,7 +58,6 @@ public class PostService
             );
     }
 
-
     //update post-----
     public PostModel updatePost(PostModel updatePost, Long id)
     {
@@ -69,7 +68,6 @@ public class PostService
 
         post.setTitle(updatePost.getTitle());
         post.setPost(updatePost.getPost());
-        post.setPostDate(updatePost.getPostDate());
 
         return postRepo.save(post);
     }

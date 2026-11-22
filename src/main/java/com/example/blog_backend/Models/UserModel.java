@@ -2,6 +2,10 @@ package com.example.blog_backend.Models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,11 +41,17 @@ public class UserModel
 
     @NotBlank(message = "Password is Required")
     @Size(min=6, message="Password must be at least 6 charecters")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore 
     private List<PostModel> posts;
+
+    @OneToMany (mappedBy = "user")
+    @JsonIgnore 
+    private List<CommentModel> comments;
 
     
 }
