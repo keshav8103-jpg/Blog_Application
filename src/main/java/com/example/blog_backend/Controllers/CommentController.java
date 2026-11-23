@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.blog_backend.Models.CommentModel;
 import com.example.blog_backend.Services.CommentService;
 
+import jakarta.validation.Valid;
+
 @RestController 
 @CrossOrigin("*")
 @RequestMapping("/api/comments")
@@ -28,7 +30,7 @@ public class CommentController
     
     //add comment------
     @PostMapping
-    public CommentModel addComment(@RequestBody CommentModel comment)
+    public CommentModel addComment(@Valid @RequestBody CommentModel comment)
     {
         return commentService.addComment(comment);
     }
@@ -49,7 +51,7 @@ public class CommentController
 
     //update comment----
     @PutMapping("/{id}")
-    public CommentModel updateComment(@RequestBody CommentModel comment, @PathVariable Long id)
+    public CommentModel updateComment(@Valid @RequestBody CommentModel comment, @PathVariable Long id)
     {
         return commentService.updateComment(comment, id);
     }

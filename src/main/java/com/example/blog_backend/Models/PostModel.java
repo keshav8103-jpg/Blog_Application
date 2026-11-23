@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class PostModel
     private Long postId;
 
     @NotBlank(message= "Title is Required")
+    @Size(max=150, message="title cannot exceed 150 characters")
     private String title;
     
     @NotBlank(message = "Post content is Required")

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.blog_backend.Models.PostModel;
 import com.example.blog_backend.Services.PostService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/posts")
@@ -28,7 +30,7 @@ public class PostController
 
     //add post
     @PostMapping 
-    public PostModel addPost(@RequestBody PostModel post)
+    public PostModel addPost(@Valid @RequestBody PostModel post)
     {
         return postService.addPost(post);
     }
@@ -49,7 +51,7 @@ public class PostController
 
     //update post---
     @PutMapping("/{id}")
-    public PostModel updatePost(@RequestBody PostModel updatepost,@PathVariable Long id)
+    public PostModel updatePost(@Valid @RequestBody PostModel updatepost,@PathVariable Long id)
     {
         return postService.updatePost(updatepost, id);
     }

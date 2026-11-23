@@ -3,7 +3,6 @@ package com.example.blog_backend.Models;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -40,7 +39,7 @@ public class UserModel
     private String email;
 
     @NotBlank(message = "Password is Required")
-    @Size(min=6, message="Password must be at least 6 charecters")
+    @Size(min=6, message="Password must be at least 6 characters")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

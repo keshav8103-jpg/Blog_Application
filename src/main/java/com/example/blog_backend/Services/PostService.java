@@ -24,8 +24,18 @@ public class PostService
     //add post----
     public PostModel addPost(PostModel post)
     {
+        if (post == null)        //// Check karo ki request mein Post object mila hai ya nahi
+        {
+            throw new IllegalArgumentException("Post data is required");
+        }
+
+        if(post.getUser()==null || post.getUser().getId()==null)
+        {
+            throw new IllegalArgumentException("User Id is required");
+        }
 
         Long userId=post.getUser().getId();    //user id nikali
+
 
         UserModel user=userRepo.findById(userId).    //userid se user search kaarna or na ho to exeption
             orElseThrow(() -> 
@@ -61,6 +71,13 @@ public class PostService
     //update post-----
     public PostModel updatePost(PostModel updatePost, Long id)
     {
+
+
+        if(updatePost==null)     //request body empty null toh nhi 
+        {
+            throw new IllegalArgumentException("Post Data is Required");
+        }
+
        PostModel post= postRepo.findById(id)              //post ko database me find karenge
         .orElseThrow(() -> new ResourceNotFoundException
             ("Post not found with id "+ id)
