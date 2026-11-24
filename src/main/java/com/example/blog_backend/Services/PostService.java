@@ -1,104 +1,122 @@
-package com.example.blog_backend.Services;
+    package com.example.blog_backend.Services;
 
-import java.time.LocalDate;
-import java.util.List;
+    import java.time.LocalDate;
+    import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Service;
 
-import com.example.blog_backend.Exceptions.ResourceNotFoundException;
+    import com.example.blog_backend.Exceptions.ResourceNotFoundException;
+import com.example.blog_backend.Models.CategoryModel;
 import com.example.blog_backend.Models.PostModel;
-import com.example.blog_backend.Models.UserModel;
+    import com.example.blog_backend.Models.UserModel;
+import com.example.blog_backend.Repo.CategoryRepo;
 import com.example.blog_backend.Repo.PostRepo;
-import com.example.blog_backend.Repo.UserRepo;
+    import com.example.blog_backend.Repo.UserRepo;
 
-@Service 
-public class PostService 
-{
-    @Autowired 
-    private PostRepo postRepo;
-
-    @Autowired
-    private UserRepo userRepo;
-
-    //add post----
-    public PostModel addPost(PostModel post)
+    @Service 
+    public class PostService 
     {
-        if (post == null)        //// Check karo ki request mein Post object mila hai ya nahi
+        @Autowired 
+        private PostRepo postRepo;
+
+        @Autowired
+        private UserRepo userRepo;
+
+        @Autowired 
+        private CategoryRepo categoryRepo;
+
+        //add post----
+        public PostModel addPost(PostModel post)
         {
-            throw new IllegalArgumentException("Post data is required");
+            if (post == null)        //// Check karo ki request mein Post object mila hai ya nahi
+            {
+                throw new IllegalArgumentException("Post data is required");
+            }
+
+            if(post.getUser()==null || post.getUser().getId()==null)
+            {
+                throw new IllegalArgumentException("User Id is required");
+            }
+
+            if(post.getCategory()==null || post.getCategory().getCId()==null)
+            {
+                throw new IllegalArgumentException("Category Id is required");
+            }
+
+            Long categoryId=post.getCategory().getCId();  //category id niklana
+            Long userId=post.getUser().getId();    //user id nikali
+
+
+            UserModel user=userRepo.findById(userId).    //userid se user search kaarna or na ho to exeption
+                orElseThrow(() -> 
+                    new ResourceNotFoundException
+                        ("User not found with Id :" + userId)
+                    );
+            
+                CategoryModel category = categoryRepo.findById(categoryId)
+                .orElseThrow(() ->
+                    new ResourceNotFoundException
+                        ("Category not found with Id :" + categoryId)
+                    );
+
+            post.setUser(user);   //post ke sath user ko connect karna 
+            post.setCategory(category);   //post ke sath category connet
+
+            post.setPostDate(LocalDate.now());   //post ki current date set karna
+
+            return postRepo.save(post);    //post ko database me save karna
+
         }
 
-        if(post.getUser()==null || post.getUser().getId()==null)
+        //get all post-----
+        public List<PostModel> getAllPost()
         {
-            throw new IllegalArgumentException("User Id is required");
+            return postRepo.findAll();
         }
 
-        Long userId=post.getUser().getId();    //user id nikali
 
-
-        UserModel user=userRepo.findById(userId).    //userid se user search kaarna or na ho to exeption
-            orElseThrow(() -> 
-                new ResourceNotFoundException
-                    ("User not found with Id :" + userId)
+        //get post by id-----
+        public PostModel getPostById(Long id)
+        {
+            return postRepo.findById(id).   //id se post search karee nhi toh exception throw 404
+                orElseThrow(() ->
+                    new ResourceNotFoundException
+                    ("Post not found with id :"+ id)
                 );
-        
-        post.setUser(user);   //post ke sath user ko connect karna 
-
-        post.setPostDate(LocalDate.now());   //post ki current date set karna
-
-        return postRepo.save(post);    //post ko database me save karna
-
-    }
-
-    //get all post-----
-    public List<PostModel> getAllPost()
-    {
-        return postRepo.findAll();
-    }
-
-
-    //get post by id-----
-    public PostModel getPostById(Long id)
-    {
-        return postRepo.findById(id).   //id se post search karee nhi toh exception throw 404
-            orElseThrow(() ->
-                new ResourceNotFoundException
-                ("Post not found with id :"+ id)
-            );
-    }
-
-    //update post-----
-    public PostModel updatePost(PostModel updatePost, Long id)
-    {
-
-
-        if(updatePost==null)     //request body empty null toh nhi 
-        {
-            throw new IllegalArgumentException("Post Data is Required");
         }
 
-       PostModel post= postRepo.findById(id)              //post ko database me find karenge
-        .orElseThrow(() -> new ResourceNotFoundException
-            ("Post not found with id "+ id)
-        );
+        //update post-----
+        public PostModel updatePost(PostModel updatePost, Long id)
+        {
 
-        post.setTitle(updatePost.getTitle());
-        post.setPost(updatePost.getPost());
 
-        return postRepo.save(post);
-    }
+            if(updatePost==null)     //request body empty null toh nhi 
+            {
+                throw new IllegalArgumentException("Post Data is Required");
+            }
 
-    //delete post------
-    public String deletePost(Long id)
-    {
-        PostModel post=postRepo.findById(id)   //post find karegenge
-            .orElseThrow(() -> 
-                new ResourceNotFoundException("Post not found with id :"+id)
+        PostModel post= postRepo.findById(id)              //post ko database me find karenge
+            .orElseThrow(() -> new ResourceNotFoundException
+                ("Post not found with id "+ id)
             );
 
-        postRepo.delete(post);
+            post.setTitle(updatePost.getTitle());
+            post.setPost(updatePost.getPost());
 
-        return "Post deleted Successfully";
+            return postRepo.save(post);
+        }
+
+        //delete post------
+        public String deletePost(Long id)
+        {
+            PostModel post=postRepo.findById(id)   //post find karegenge
+                .orElseThrow(() -> 
+                    new ResourceNotFoundException("Post not found with id :"+id)
+                );
+
+            postRepo.delete(post);
+
+            return "Post deleted Successfully";
+        }
     }
-}

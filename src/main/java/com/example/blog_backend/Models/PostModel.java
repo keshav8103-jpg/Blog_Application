@@ -1,46 +1,50 @@
-package com.example.blog_backend.Models;
+    package com.example.blog_backend.Models;
 
-import java.time.LocalDate;
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+    import java.time.LocalDate;
+    import java.util.List;
+    import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+    import jakarta.persistence.Entity;
+    import jakarta.persistence.GeneratedValue;
+    import jakarta.persistence.GenerationType;
+    import jakarta.persistence.Id;
+    import jakarta.persistence.ManyToOne;
+    import jakarta.persistence.OneToMany;
+    import jakarta.validation.constraints.NotBlank;
+    import jakarta.validation.constraints.Size;
+    import lombok.Getter;
+    import lombok.NoArgsConstructor;
+    import lombok.Setter;
 
-@Entity 
-@NoArgsConstructor 
-@Getter 
-@Setter 
-public class PostModel 
-{
-    @Id 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Entity 
+    @NoArgsConstructor 
+    @Getter 
+    @Setter 
+    public class PostModel 
+    {
+        @Id 
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private Long postId;
+        private Long postId;
 
-    @NotBlank(message= "Title is Required")
-    @Size(max=150, message="title cannot exceed 150 characters")
-    private String title;
-    
-    @NotBlank(message = "Post content is Required")
-    private String post;
-    
-    private LocalDate postDate;
+        @NotBlank(message= "Title is Required")
+        @Size(max=150, message="title cannot exceed 150 characters")
+        private String title;
+        
+        @NotBlank(message = "Post content is Required")
+        @Size(max = 10000, message = "Post content cannot exceed 10000 characters")
+        private String post;
+        
+        private LocalDate postDate;
 
-    @ManyToOne 
-    private UserModel user;
+        @ManyToOne 
+        private UserModel user;
 
-    @OneToMany(mappedBy ="post")
-    @JsonIgnore 
-    private List<CommentModel> comments;
-    
-}
+        @OneToMany(mappedBy ="post")
+        @JsonIgnore 
+        private List<CommentModel> comments;
+
+        @ManyToOne 
+        private CategoryModel category;
+        
+    }
