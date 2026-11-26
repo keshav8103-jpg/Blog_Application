@@ -7,11 +7,11 @@
     import org.springframework.stereotype.Service;
 
     import com.example.blog_backend.Exceptions.ResourceNotFoundException;
-import com.example.blog_backend.Models.CategoryModel;
-import com.example.blog_backend.Models.PostModel;
+    import com.example.blog_backend.Models.CategoryModel;
+    import com.example.blog_backend.Models.PostModel;
     import com.example.blog_backend.Models.UserModel;
-import com.example.blog_backend.Repo.CategoryRepo;
-import com.example.blog_backend.Repo.PostRepo;
+    import com.example.blog_backend.Repo.CategoryRepo;
+    import com.example.blog_backend.Repo.PostRepo;
     import com.example.blog_backend.Repo.UserRepo;
 
     @Service 
@@ -90,19 +90,41 @@ import com.example.blog_backend.Repo.PostRepo;
         public PostModel updatePost(PostModel updatePost, Long id)
         {
 
-
-            if(updatePost==null)     //request body empty null toh nhi 
+            //request body empty null toh nhi 
+            if(updatePost==null)    
             {
                 throw new IllegalArgumentException("Post Data is Required");
             }
 
-        PostModel post= postRepo.findById(id)              //post ko database me find karenge
+
+            //check category object or id  
+            if(updatePost.getCategory()==null ||
+                updatePost.getCategory().getCId()==null)
+            {
+                throw new IllegalArgumentException("Category id is required");
+            }
+
+
+            //post ko database me find karenge
+            PostModel post= postRepo.findById(id)             
             .orElseThrow(() -> new ResourceNotFoundException
                 ("Post not found with id "+ id)
             );
 
+            //ctaegory id lena request se 
+            Long categoryId= updatePost.getCategory().getCId();
+
+            //category find karna databse 
+            CategoryModel category=categoryRepo.findById(categoryId)
+                .orElseThrow(() ->
+                    new ResourceNotFoundException
+                    ("Category not found with id :"+ categoryId)
+                );
+            
+            //update post details
             post.setTitle(updatePost.getTitle());
             post.setPost(updatePost.getPost());
+            post.setCategory(category);
 
             return postRepo.save(post);
         }

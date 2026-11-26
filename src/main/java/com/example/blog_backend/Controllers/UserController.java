@@ -1,63 +1,74 @@
-package com.example.blog_backend.Controllers;
+    package com.example.blog_backend.Controllers;
 
-import java.util.List;
+    import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.web.bind.annotation.CrossOrigin;
+    import org.springframework.web.bind.annotation.DeleteMapping;
+    import org.springframework.web.bind.annotation.GetMapping;
+    import org.springframework.web.bind.annotation.PathVariable;
+    import org.springframework.web.bind.annotation.PostMapping;
+    import org.springframework.web.bind.annotation.PutMapping;
+    import org.springframework.web.bind.annotation.RequestBody;
+    import org.springframework.web.bind.annotation.RequestMapping;
+    import org.springframework.web.bind.annotation.RestController;
 
+import com.example.blog_backend.Dto.LoginDto;
 import com.example.blog_backend.Models.UserModel;
-import com.example.blog_backend.Services.UserService;
+    import com.example.blog_backend.Services.UserService;
 
-import jakarta.validation.Valid;
+    import jakarta.validation.Valid;
 
-@RestController 
-@CrossOrigin("*")
-@RequestMapping("/api/users")
-public class UserController 
-{
-    @Autowired 
-    private UserService userService;
-
-    //add user-----
-    @PostMapping
-    public UserModel addUser(@Valid @RequestBody UserModel user)
+    @RestController 
+    @CrossOrigin("*")
+    @RequestMapping("/api/users")
+    public class UserController 
     {
-        return userService.addUser(user);
-    }
+        @Autowired 
+        private UserService userService;
+        
 
-    //get user-----
-    @GetMapping 
-    public List<UserModel> getAllUser()
-    {
-        return userService.getAllUser();
-    }
 
-    //get by id
-    @GetMapping("/{id}")
-    public UserModel getUserById(@PathVariable Long id)
-    {
-        return userService.getUserById(id);
-    }
+        // User login API
+        @PostMapping("/login")
+        public String loginUser(@RequestBody LoginDto loginDto)
+        {
+            // LoginDto ka data UserService ko bhej rahe hain.
+            return userService.loginUser(loginDto);
+        }
 
-    //update user-----
-    @PutMapping("/{id}")
-    public UserModel updateUser(@Valid @RequestBody UserModel updateUser, @PathVariable Long id)
-    {
-        return userService.updateUser(id, updateUser);
-    }
+        //add user-----
+        @PostMapping
+        public UserModel addUser(@Valid @RequestBody UserModel user)
+        {
+            return userService.addUser(user);
+        }
 
-    //delete user-----
-    @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable Long id)
-    {
-        return userService.deleteUser(id);
+        //get user-----
+        @GetMapping 
+        public List<UserModel> getAllUser()
+        {
+            return userService.getAllUser();
+        }
+
+        //get by id
+        @GetMapping("/{id}")
+        public UserModel getUserById(@PathVariable Long id)
+        {
+            return userService.getUserById(id);
+        }
+
+        //update user-----
+        @PutMapping("/{id}")
+        public UserModel updateUser(@Valid @RequestBody UserModel updateUser, @PathVariable Long id)
+        {
+            return userService.updateUser(id, updateUser);
+        }
+
+        //delete user-----
+        @DeleteMapping("/{id}")
+        public String deleteUser(@PathVariable Long id)
+        {
+            return userService.deleteUser(id);
+        }
     }
-}

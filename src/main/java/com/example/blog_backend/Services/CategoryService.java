@@ -8,6 +8,7 @@
 import com.example.blog_backend.Exceptions.ResourceNotFoundException;
 import com.example.blog_backend.Models.CategoryModel;
     import com.example.blog_backend.Repo.CategoryRepo;
+import com.example.blog_backend.Repo.PostRepo;
 
     @Service 
     public class CategoryService 
@@ -15,6 +16,8 @@ import com.example.blog_backend.Models.CategoryModel;
         @Autowired 
         private CategoryRepo categoryRepo;
 
+        @Autowired 
+        private PostRepo postRepo;
         //add category---
         public CategoryModel addCategory(CategoryModel category)
         {
@@ -65,11 +68,20 @@ import com.example.blog_backend.Models.CategoryModel;
         //delete category--------
         public String deleteCategory(Long id)
         {
+            //phle category dekho hai ya nhi
             CategoryModel category=categoryRepo.findById(id)
             .orElseThrow(() -> 
                 new ResourceNotFoundException
                 ("Category not found with id: "+ id)
             );
+
+
+            //check karo ki ess category se koi post hai kya
+            if(postRepo.existsByCategory_CId(id))
+            {
+                throw new IllegalArgumentException
+                ("Cannot delete category because posts are associated with this category");
+            }
 
             categoryRepo.delete(category);
             return "Category deleted successfully";

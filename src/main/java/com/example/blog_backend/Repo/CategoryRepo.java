@@ -7,5 +7,6 @@ import com.example.blog_backend.Models.CategoryModel;
 public interface CategoryRepo extends JpaRepository <CategoryModel, Long>
 {
 
+    boolean existsByCategory_CId(Long categoryId);
     
 }
