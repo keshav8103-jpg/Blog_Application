@@ -5,7 +5,7 @@
 
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.stereotype.Service;
-
+    import org.springframework.security.core.context.SecurityContextHolder;
     import com.example.blog_backend.Exceptions.ResourceNotFoundException;
     import com.example.blog_backend.Models.CategoryModel;
     import com.example.blog_backend.Models.PostModel;
@@ -34,31 +34,25 @@
                 throw new IllegalArgumentException("Post data is required");
             }
 
-            if(post.getUser()==null || post.getUser().getId()==null)
-            {
-                throw new IllegalArgumentException("User Id is required");
-            }
-
             if(post.getCategory()==null || post.getCategory().getCId()==null)
             {
                 throw new IllegalArgumentException("Category Id is required");
             }
 
             Long categoryId=post.getCategory().getCId();  //category id niklana
-            Long userId=post.getUser().getId();    //user id nikali
 
 
-            UserModel user=userRepo.findById(userId).    //userid se user search kaarna or na ho to exeption
-                orElseThrow(() -> 
+            // JWT se logged-in user ka email lena
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            // Email se database me user find karna
+            UserModel user = userRepo.findByEmail(email);
+
+            CategoryModel category = categoryRepo.findById(categoryId)
+               .orElseThrow(() ->
                     new ResourceNotFoundException
-                        ("User not found with Id :" + userId)
-                    );
-            
-                CategoryModel category = categoryRepo.findById(categoryId)
-                .orElseThrow(() ->
-                    new ResourceNotFoundException
-                        ("Category not found with Id :" + categoryId)
-                    );
+                    ("Category not found with Id :" + categoryId)
+                );
 
             post.setUser(user);   //post ke sath user ko connect karna 
             post.setCategory(category);   //post ke sath category connet
@@ -111,6 +105,15 @@
                 ("Post not found with id "+ id)
             );
 
+            // JWT se logged-in user ka email lena
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+             // Check karna ki post ka owner logged-in user hi hai
+            if(!post.getUser().getEmail().equals(email))
+            {
+                throw new IllegalArgumentException("You are not allowed to update this post");
+            }
+
             //ctaegory id lena request se 
             Long categoryId= updatePost.getCategory().getCId();
 
@@ -136,6 +139,15 @@
                 .orElseThrow(() -> 
                     new ResourceNotFoundException("Post not found with id :"+id)
                 );
+
+            // JWT se logged-in user ka email lena
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            // Check karna ki post ka owner logged-in user hi hai
+            if(!post.getUser().getEmail().equals(email))
+            {
+                throw new IllegalArgumentException("You are not allowed to delete this post");
+            }
 
             postRepo.delete(post);
 

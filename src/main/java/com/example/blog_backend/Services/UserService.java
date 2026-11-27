@@ -30,6 +30,9 @@ public class UserService
     @Autowired 
     private PasswordEncoder passwordEncoder;
 
+    @Autowired 
+    private JwtService jwtService;
+
     
     //Login user--------
     public String loginUser(LoginDto loginDto)
@@ -53,26 +56,11 @@ public class UserService
             throw new IllegalArgumentException("Invalid password");
         }
 
-        // Email aur password sahi hone par success message return karenge.
-        return "Login Successfully";
+        // Email aur password sahi hone par success JWT token generate karenge.
+        return jwtService.generateToken(user.getEmail());
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     //add user-----
     public UserModel addUser(UserModel user)
